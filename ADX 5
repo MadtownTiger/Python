@@ -9,7 +9,7 @@ from termcolor import colored as cl
 plt.style.use('fivethirtyeight')
 plt.rcParams['figure.figsize'] = (20,10)
 
-stock = yf.download("UEC", start='2018-01-01')
+stock = yf.download("GOOGL", start='2018-01-01')
 stock
 
 def get_adx(High, Low, Close, lookback):
@@ -32,9 +32,9 @@ def get_adx(High, Low, Close, lookback):
     adx_smooth = adx.ewm(alpha = 1/lookback).mean()
     return plus_di, minus_di, adx_smooth
 
-stock['plus_di'] = pd.DataFrame(get_adx(stock['High'], stock['Low'], stock['Close'], 7)[0]).rename(columns = {0:'plus_di'})
-stock['minus_di'] = pd.DataFrame(get_adx(stock['High'], stock['Low'], stock['Close'], 7)[1]).rename(columns = {0:'minus_di'})
-stock['adx'] = pd.DataFrame(get_adx(stock['High'], stock['Low'], stock['Close'], 7)[2]).rename(columns = {0:'adx'})
+stock['plus_di'] = pd.DataFrame(get_adx(stock['High'], stock['Low'], stock['Close'], 10)[0]).rename(columns = {0:'plus_di'})
+stock['minus_di'] = pd.DataFrame(get_adx(stock['High'], stock['Low'], stock['Close'], 10)[1]).rename(columns = {0:'minus_di'})
+stock['adx'] = pd.DataFrame(get_adx(stock['High'], stock['Low'], stock['Close'], 10)[2]).rename(columns = {0:'adx'})
 stock = stock.dropna()
 stock.tail()
 
@@ -147,6 +147,7 @@ for i in range(len(adx_strategy_ret_df['adx_returns'])):
 adx_investment_ret_df = pd.DataFrame(adx_investment_ret).rename(columns = {0:'investment_returns'})
 total_investment_ret = round(sum(adx_investment_ret_df['investment_returns']), 2)
 profit_percentage = floor((total_investment_ret/investment_value)*100)
+
 print(cl('Profit gained from the ADX strategy by investing $100k in Stock : {}'.format(total_investment_ret), attrs = ['bold']))
 print(cl('Profit percentage of the ADX strategy : {}%'.format(profit_percentage), attrs = ['bold']))
 

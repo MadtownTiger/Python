@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import requests
 import yfinance as yf
 import matplotlib.pyplot as plt
 from math import floor
@@ -9,9 +8,8 @@ from termcolor import colored as cl
 plt.style.use('fivethirtyeight')
 plt.rcParams['figure.figsize'] = (20,10)
 
-stock = yf.download("SIL=F", start='2018-01-01')
+stock = yf.download("GOOGL", start='2018-01-01')
 stock
-
 
 def get_adx(High, Low, Close, lookback):
     plus_dm = High.diff()

@@ -37,22 +37,7 @@ stock['adx'] = pd.DataFrame(get_adx(stock['High'], stock['Low'], stock['Close'],
 stock = stock.dropna()
 stock.tail()
 
-def calculate_rsi(prices, period=14):
-    delta = prices.diff()
-    gain = delta.where(delta > 0, 0)
-    loss = -delta.where(delta < 0, 0)
-
-    avg_gain = gain.ewm(com=period - 1, min_periods=period).mean()
-    avg_loss = loss.ewm(com=period - 1, min_periods=period).mean()
-
-    rs = avg_gain / avg_loss
-    rsi = 100 - (100 / (1 + rs))
-    return rsi
-
-rsi_values = calculate_rsi(stock['Close'])
-stock['RSI'] = rsi_values
-
-fig, axs = plt.subplots(3, sharex=True)
+fig, axs = plt.subplots(2, sharex=True)
 axs[0].plot(stock['Close'], linewidth = 2, color = '#ff9800')
 axs[0].set_title('Stock CLOSING PRICE')
 axs[1].plot(stock['plus_di'], color = '#26a69a', label = '+ DI 14', linewidth = 3, alpha = 0.3)
@@ -61,11 +46,6 @@ axs[1].plot(stock['adx'], color = '#2196f3', label = 'ADX 14', linewidth = 3)
 axs[1].axhline(25, color = 'grey', linewidth = 2, linestyle = '--')
 axs[1].legend()
 axs[1].set_title('Stock ADX 14')
-axs[2].plot(stock['RSI'], color = '#26a69a', label = 'RSI', linewidth = 3, alpha = 0.3)
-axs[2].axhline(30, color = 'grey', linewidth = 2, linestyle = '--')
-axs[2].axhline(70, color = 'grey', linewidth = 2, linestyle = '--')
-axs[2].legend()
-axs[2].set_title('Stock RSI')
 plt.show()
 
 def implement_adx_strategy(prices, pdi, ndi, adx):
@@ -73,17 +53,6 @@ def implement_adx_strategy(prices, pdi, ndi, adx):
     sell_price = []
     adx_signal = []
     signal = 0
-    
-def generate_signals(rsi_values):
-    signals = []
-    for rsi in rsi_values:
-        if rsi > 70:
-            signals.append('SELL')
-        elif rsi < 30:
-            signals.append('BUY')
-        else:
-            signals.append('HOLD')
-    return signals
 
     for i in range(len(prices)):
         if adx[i-1] < 25 and adx[i] > 25 and pdi[i] > ndi[i]:
@@ -115,7 +84,7 @@ def generate_signals(rsi_values):
 
 buy_price, sell_price, adx_signal = implement_adx_strategy(stock['Close'], stock['plus_di'], stock['minus_di'], stock['adx'])
 
-fig, axs = plt.subplots(3, sharex=True)
+fig, axs = plt.subplots(2, sharex=True)
 axs[0].plot(stock['Close'], linewidth = 3, color = '#ff9800', alpha = 0.6)
 axs[0].set_title('STOCK CLOSING PRICE')
 axs[0].plot(stock.index, buy_price, marker = '^', color = '#26a69a', markersize = 14, linewidth = 0, label = 'BUY SIGNAL')
@@ -126,11 +95,6 @@ axs[1].plot(stock['adx'], color = '#2196f3', label = 'ADX 14', linewidth = 3)
 axs[1].axhline(25, color = 'grey', linewidth = 2, linestyle = '--')
 axs[1].legend()
 axs[1].set_title('Stock ADX 14')
-axs[2].plot(stock['RSI'], color = '#26a69a', label = 'RSI', linewidth = 3, alpha = 0.3)
-axs[2].axhline(30, color = 'grey', linewidth = 2, linestyle = '--')
-axs[2].axhline(70, color = 'grey', linewidth = 2, linestyle = '--')
-axs[2].legend()
-axs[2].set_title('Stock RSI')
 plt.show()
 
 position = []
